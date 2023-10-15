@@ -1,0 +1,11 @@
+(env
+ (static
+  (flags
+   (:standard -ccopt -static))))
+
+(executables
+ (names cmi_parser_main)
+ (public_names cmidump)
+ (flags
+  (:standard -w +a-4-32-40-42))
+ (libraries core))
