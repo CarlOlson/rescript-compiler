@@ -3,9 +3,13 @@
 
 import * as path from "node:path";
 import { spawnSync } from "node:child_process";
-import type { BuildState, Package, Module } from "../types/build.ts";
-import { getPackageBuildPath, getPackageOcamlBuildPath, namespaceToSuffix } from "../types/build.ts";
-import { getAstPath, containsAsciiCharacters, getBasename } from "../utils/paths.ts";
+import type { BuildState, Package } from "../types/build.ts";
+import {
+  getPackageBuildPath,
+  getPackageOcamlBuildPath,
+  namespaceToSuffix,
+} from "../types/build.ts";
+import { getAstPath, containsAsciiCharacters } from "../utils/paths.ts";
 import {
   flattenFlags,
   getJsxArgs,
@@ -50,7 +54,11 @@ export function getParserArgs(
   const jsxPreserveArgs = getJsxPreserveArgs(rootConfig);
   const experimentalFeaturesArgs = getExperimentalFeaturesArgs(rootConfig);
   const bscFlags = flattenFlags(pkg.config["compiler-flags"]);
-  const warningArgs = getWarningArgs(pkg.config, pkg.isLocalDep, warnErrorOverride);
+  const warningArgs = getWarningArgs(
+    pkg.config,
+    pkg.isLocalDep,
+    warnErrorOverride,
+  );
 
   // PPX flags would need more complex handling - simplified for now
   const ppxFlags = filterPpxFlags(pkg.config["ppx-flags"], contents);
@@ -210,7 +218,7 @@ export function generateAsts(
   const dirtyPackages = new Set<string>();
 
   // Process all modules
-  for (const [moduleName, module] of buildState.modules) {
+  for (const [_moduleName, module] of buildState.modules) {
     const pkg = buildState.packages.get(module.packageName);
     if (pkg === undefined) {
       continue;
@@ -240,13 +248,13 @@ export function generateAsts(
         sourceFile.implementation.parseDirty = true;
         if (result.stderr) {
           logAppend(pkg, result.stderr);
-          stderr += result.stderr + "\n";
+          stderr += `${result.stderr}\n`;
         }
       } else if (result.stderr && pkg.isLocalDep) {
         sourceFile.implementation.parseState = "warning";
         sourceFile.implementation.parseDirty = true;
         logAppend(pkg, result.stderr);
-        stderr += result.stderr + "\n";
+        stderr += `${result.stderr}\n`;
       } else {
         sourceFile.implementation.parseState = "success";
         sourceFile.implementation.parseDirty = false;
@@ -272,13 +280,13 @@ export function generateAsts(
         sourceFile.interface.parseDirty = true;
         if (result.stderr) {
           logAppend(pkg, result.stderr);
-          stderr += result.stderr + "\n";
+          stderr += `${result.stderr}\n`;
         }
       } else if (result.stderr && pkg.isLocalDep) {
         sourceFile.interface.parseState = "warning";
         sourceFile.interface.parseDirty = true;
         logAppend(pkg, result.stderr);
-        stderr += result.stderr + "\n";
+        stderr += `${result.stderr}\n`;
       } else {
         sourceFile.interface.parseState = "success";
         sourceFile.interface.parseDirty = false;
@@ -291,7 +299,7 @@ export function generateAsts(
   }
 
   // Compile mlmaps for dirty packages
-  for (const [moduleName, module] of buildState.modules) {
+  for (const [_moduleName, module] of buildState.modules) {
     if (module.sourceType.type !== "mlMap") {
       continue;
     }

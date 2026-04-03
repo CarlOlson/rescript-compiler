@@ -4,10 +4,10 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 import type { Config } from "../types/config.ts";
-import type { MonoRepoContext, ProjectContext } from "../types/build.ts";
-import { parseConfigSync, getConfigPath, hasConfig } from "../config/parser.ts";
+import type { ProjectContext } from "../types/build.ts";
+import { parseConfigSync, getConfigPath } from "../config/parser.ts";
 import { isLocalPackage } from "../utils/paths.ts";
-import { getAbsPath, getNearestConfig } from "../utils/helpers.ts";
+import { getNearestConfig } from "../utils/helpers.ts";
 
 /**
  * Read local packages from node_modules that are symlinked (monorepo deps)
@@ -42,7 +42,9 @@ function isConfigListedInWorkspace(
 ): boolean {
   const deps = workspaceConfig.dependencies ?? [];
   const devDeps = workspaceConfig["dev-dependencies"] ?? [];
-  return deps.includes(currentConfig.name) || devDeps.includes(currentConfig.name);
+  return (
+    deps.includes(currentConfig.name) || devDeps.includes(currentConfig.name)
+  );
 }
 
 /**
@@ -84,7 +86,7 @@ function monorepoOrSingleProject(
  * Create a project context from a folder path
  */
 export function createProjectContext(folder: string): ProjectContext {
-  const projectPath = getAbsPath(folder);
+  const projectPath = path.resolve(folder);
   const configPath = getConfigPath(projectPath);
 
   // Read the current config

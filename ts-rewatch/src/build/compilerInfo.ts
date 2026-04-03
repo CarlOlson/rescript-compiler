@@ -5,8 +5,11 @@ import * as fs from "node:fs/promises";
 import * as fsSync from "node:fs";
 import * as path from "node:path";
 import type { CompilerInfo, Package, BuildState } from "../types/build.ts";
-import { getPackageBuildPath, getPackageCompilerInfoPath } from "../types/build.ts";
-import { computeFileHash, computeFileHashSync } from "../utils/hash.ts";
+import {
+  getPackageBuildPath,
+  getPackageCompilerInfoPath,
+} from "../types/build.ts";
+import { computeFileHashSync } from "../utils/hash.ts";
 import { getBsc, getRuntimePath, getSystemTime } from "../utils/helpers.ts";
 
 // Package version (would come from package.json in real implementation)
@@ -17,7 +20,7 @@ interface CompilerInfoFile {
   bsc_path: string;
   bsc_hash: string;
   rescript_config_hash: string;
-  runtime_path: string;
+  runtime_path?: string;
   generated_at: string;
 }
 
@@ -187,7 +190,7 @@ export async function writeCompilerInfo(buildState: BuildState): Promise<void> {
       await fs.mkdir(dir, { recursive: true });
 
       // Write atomically using temp file + rename
-      const tmpPath = infoPath + ".tmp";
+      const tmpPath = `${infoPath}.tmp`;
       try {
         await fs.writeFile(tmpPath, contents);
         await fs.rename(tmpPath, infoPath);
@@ -245,7 +248,7 @@ export function writeCompilerInfoSync(buildState: BuildState): void {
     fsSync.mkdirSync(dir, { recursive: true });
 
     // Write atomically using temp file + rename
-    const tmpPath = infoPath + ".tmp";
+    const tmpPath = `${infoPath}.tmp`;
     try {
       fsSync.writeFileSync(tmpPath, contents);
       fsSync.renameSync(tmpPath, infoPath);

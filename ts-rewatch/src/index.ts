@@ -3,7 +3,7 @@
 // Port from rewatch/src/main.rs and rewatch/src/cli.rs
 
 import { Command } from "commander";
-import { build, type BuildOptions, type BuildResult } from "./build/index.ts";
+import { build, type BuildOptions } from "./build/index.ts";
 import { emojis } from "./utils/helpers.ts";
 
 const VERSION = "0.1.0";
@@ -77,6 +77,7 @@ function main(): void {
     .option("--no-timing", "Disable timing output")
     .argument("[folder]", "Project folder", ".")
     .action((folder: string, cmdOptions: Record<string, unknown>) => {
+        process.chdir(folder);
       // Merge parent options with command options
       const parentOptions = program.opts();
       handleBuild(folder, {

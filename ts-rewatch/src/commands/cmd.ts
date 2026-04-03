@@ -67,7 +67,10 @@ export async function runCommand(
 /**
  * Run an external command synchronously
  */
-export function runCommandSync(commandString: string, cwd?: string): CommandResult {
+export function runCommandSync(
+  commandString: string,
+  cwd?: string,
+): CommandResult {
   const { spawnSync } = require("node:child_process");
 
   const parts = commandString.trim().split(/\s+/);

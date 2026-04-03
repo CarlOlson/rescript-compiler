@@ -38,7 +38,7 @@ export function namespaceToSuffix(namespace: Namespace): string | undefined {
     case "namespace":
       return namespace.name;
     case "namespaceWithEntry":
-      return "@" + namespace.name;
+      return `@${namespace.name}`;
     case "noNamespace":
       return undefined;
   }

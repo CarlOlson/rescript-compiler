@@ -3,19 +3,13 @@
 
 import * as fs from "node:fs";
 import * as path from "node:path";
-import type {
-  Package,
-  BuildState,
-  Module,
-  Namespace,
-  CompileAssetsState,
-} from "../types/build.ts";
+import type { Package, BuildState, Module, Namespace } from "../types/build.ts";
 import {
   getPackageBuildPath,
   getPackageOcamlBuildPath,
   getPackageCompilerInfoPath,
 } from "../types/build.ts";
-import { getExtension, getBasename, getSourceFileFromRescriptFile } from "../utils/paths.ts";
+import { getBasename, getSourceFileFromRescriptFile } from "../utils/paths.ts";
 import { getSuffix, getPackageSpecs } from "../types/config.ts";
 import { emojis } from "../utils/helpers.ts";
 

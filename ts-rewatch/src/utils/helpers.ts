@@ -4,7 +4,8 @@
 import * as fs from "node:fs/promises";
 import * as fsSync from "node:fs";
 import * as path from "node:path";
-import { stripVerbatimPath, getBasename, capitalize } from "./paths.ts";
+import { getBasename, capitalize } from "./paths.ts";
+import { createRequire } from 'node:module';
 import type { Namespace } from "../types/build.ts";
 
 // Emoji constants for console output
@@ -20,39 +21,49 @@ export const emojis = {
 };
 
 /**
- * Get the directory containing the current executable (or module)
- */
-export function getBinDir(): string {
-  // In Node.js, we use the directory of the current module
-  return path.dirname(process.argv[1] || __dirname);
-}
-
-/**
  * Find the bsc executable.
  * First checks RESCRIPT_BSC_EXE environment variable,
  * then falls back to bin/bsc.exe relative to the bin dir.
  */
 export function getBsc(): string {
-  const envBsc = process.env.RESCRIPT_BSC_EXE;
+  const require = createRequire(path.join(process.cwd(), "./package.json"));
+  const envBsc =
+    process.env.RESCRIPT_BSC_EXE ?? require.resolve(".bin/bsc");
+    // require.resolve("rescript/bsc"); // 11.x
   if (envBsc) {
     const resolved = fsSync.realpathSync(envBsc);
-    return stripVerbatimPath(resolved);
+    return resolved;
+  } else if (process.env.RESCRIPT_BSC_EXE) {
+    throw new Error(
+      `Could not find bsc, RESCRIPT_BSC_EXE=${process.env.RESCRIPT_BSC_EXE}`,
+    );
+  } else {
+    throw new Error("Could not find rescript/bsc");
   }
-  const bscPath = path.join(getBinDir(), "bsc.exe");
-  const resolved = fsSync.realpathSync(bscPath);
-  return stripVerbatimPath(resolved);
 }
 
 /**
  * Get the runtime path from environment variable
  */
-export function getRuntimePath(): string {
+export function getRuntimePath(): string | undefined {
   const envRuntime = process.env.RESCRIPT_RUNTIME;
-  if (envRuntime) {
+  if (envRuntime?.trim() === '') {
+    return undefined;
+  } else if (envRuntime) {
     return fsSync.realpathSync(envRuntime);
+  } else if (process.env.RESCRIPT_RUNTIME) {
+    throw new Error(
+      `Could not find runtime, RESCRIPT_RUNTIME=${process.env.RESCRIPT_RUNTIME}`,
+    );
+  } else {
+    try {
+      const require = createRequire(path.join(process.cwd(), "./package.json"));
+      const runtime = require.resolve("@rescript/runtime/package.json");
+      return fsSync.realpathSync(runtime);
+    } catch (cause) {
+      throw new Error("Could not find @rescript/runtime, try setting RESCRIPT_RUNTIME", { cause });
+    }
   }
-  // Default to @rescript/runtime relative to bin dir
-  return path.join(getBinDir(), "..", "@rescript", "runtime");
 }
 
 /**
@@ -194,41 +205,6 @@ export function getNearestConfig(startPath: string): string | undefined {
     }
     currentDir = parent;
   }
-}
-
-/**
- * Get the absolute path, handling relative paths
- */
-export function getAbsPath(p: string): string {
-  const absPath = path.resolve(p);
-  return absPath;
-}
-
-/**
- * Check if a file or directory exists
- */
-export function exists(p: string): boolean {
-  return fsSync.existsSync(p);
-}
-
-/**
- * Check if a file or directory exists (async)
- */
-export async function existsAsync(p: string): Promise<boolean> {
-  try {
-    await fs.access(p);
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-/**
- * Get the modification time of a file
- */
-export async function getLastModified(filePath: string): Promise<number> {
-  const stats = await fs.stat(filePath);
-  return stats.mtimeMs;
 }
 
 /**

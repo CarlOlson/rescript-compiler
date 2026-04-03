@@ -4,7 +4,10 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 import type { Package } from "../types/build.ts";
-import { getPackageBuildPath, getPackageOcamlBuildPath } from "../types/build.ts";
+import {
+  getPackageBuildPath,
+  getPackageOcamlBuildPath,
+} from "../types/build.ts";
 import { getSystemTime, createPathSync } from "../utils/helpers.ts";
 
 type Location = "bs" | "ocaml";
@@ -14,7 +17,9 @@ type Location = "bs" | "ocaml";
  */
 function getLogFilePath(pkg: Package, location: Location): string {
   const buildFolder =
-    location === "bs" ? getPackageBuildPath(pkg) : getPackageOcamlBuildPath(pkg);
+    location === "bs"
+      ? getPackageBuildPath(pkg)
+      : getPackageOcamlBuildPath(pkg);
   return path.join(buildFolder, ".compiler.log");
 }
 
@@ -59,7 +64,9 @@ export function initialize(packages: Map<string, Package>): void {
       createPathSync(dir);
       fs.writeFileSync(logPath, `#Start(${getSystemTime()})\n`);
     } catch (e) {
-      throw new Error(`Cannot create compiler log for package ${pkg.name}: ${e}`);
+      throw new Error(
+        `Cannot create compiler log for package ${pkg.name}: ${e}`,
+      );
     }
   }
 }

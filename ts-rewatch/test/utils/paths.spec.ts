@@ -1,5 +1,4 @@
 import {
-  stripVerbatimPath,
   capitalize,
   getBasename,
   getExtension,
@@ -18,23 +17,6 @@ import {
   getSourceFileFromRescriptFile,
   isLocalPackage,
 } from "../../src/utils/paths.ts";
-
-describe("stripVerbatimPath", () => {
-  test("returns unchanged on non-Windows", () => {
-    const path = "/home/user/project";
-    expect(stripVerbatimPath(path)).toBe(path);
-  });
-
-  test("strips \\\\?\\ prefix on Windows paths", () => {
-    // On non-Windows, this just returns unchanged
-    const path = "\\\\?\\C:\\Users\\test";
-    if (process.platform === "win32") {
-      expect(stripVerbatimPath(path)).toBe("C:\\Users\\test");
-    } else {
-      expect(stripVerbatimPath(path)).toBe(path);
-    }
-  });
-});
 
 describe("capitalize", () => {
   test("capitalizes first letter", () => {

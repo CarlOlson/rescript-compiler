@@ -2,7 +2,7 @@
 // Module dependency analysis
 
 import * as path from "node:path";
-import type { BuildState, Module, Package, Namespace } from "../types/build.ts";
+import type { BuildState, Module, Package } from "../types/build.ts";
 import { getPackageBuildPath, namespaceToSuffix } from "../types/build.ts";
 import { getAstPath } from "../utils/paths.ts";
 import { readLinesSync } from "../utils/helpers.ts";
@@ -59,11 +59,16 @@ function getDepModules(
       // If the module is in the own namespace, take the submodule
       // e.g., TeamwalnutApp.MyModule inside namespace TeamwalnutApp -> MyModule
       const moduleName =
-        depSecond !== undefined && depFirst === namespace ? depSecond : depFirst;
+        depSecond !== undefined && depFirst === namespace
+          ? depSecond
+          : depFirst;
 
       const namespacedName = `${moduleName}-${namespace}`;
 
-      if (packageModules.has(namespacedName) || validModules.has(namespacedName)) {
+      if (
+        packageModules.has(namespacedName) ||
+        validModules.has(namespacedName)
+      ) {
         resolvedDep = namespacedName;
       } else {
         resolvedDep = moduleName;
@@ -131,7 +136,7 @@ export function getDeps(
     if (module.depsDirty || !buildState.depsInitialized) {
       const namespace = namespaceToSuffix(pkg.namespace);
 
-      let deps = getDepModules(
+      const deps = getDepModules(
         astPath,
         namespace,
         pkg.modules ?? new Set(),

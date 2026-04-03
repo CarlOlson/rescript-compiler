@@ -4,7 +4,7 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 import { spawn } from "node:child_process";
-import type { Package, ProjectContext } from "../types/build.ts";
+import type { Package } from "../types/build.ts";
 import { getPackageBuildPath } from "../types/build.ts";
 import { createPathSync } from "../utils/helpers.ts";
 
@@ -35,7 +35,7 @@ export function generateMlmap(
   // Sort modules for deterministic output
   const sortedModules = Array.from(dependingModules).sort();
   for (const module of sortedModules) {
-    content += module + "\n";
+    content += `${module}\n`;
   }
 
   // Ensure directory exists
@@ -62,12 +62,11 @@ export function generateMlmapPath(
  * Get mlmap compiler arguments
  */
 export function getMlmapCompilerArgs(
-  runtimePath: string,
+  runtimePath: string | undefined,
   namespace: string,
 ): string[] {
   return [
-    "-runtime",
-    runtimePath,
+    ...(runtimePath ? ["-runtime", runtimePath] : []),
     "-w",
     "-49",
     "-color",
@@ -84,14 +83,13 @@ export async function compileMlmap(
   pkg: Package,
   namespace: string,
   bscPath: string,
-  runtimePath: string,
+  runtimePath?: string,
 ): Promise<void> {
   const buildPath = getPackageBuildPath(pkg);
   const mlmapName = `${namespace}.mlmap`;
 
   const args = [
-    "-runtime",
-    runtimePath,
+    ...(runtimePath ? ["-runtime", runtimePath] : []),
     "-w",
     "-49",
     "-color",
@@ -140,15 +138,14 @@ export function compileMlmapSync(
   pkg: Package,
   namespace: string,
   bscPath: string,
-  runtimePath: string,
+  runtimePath?: string,
 ): void {
   const { spawnSync } = require("node:child_process");
   const buildPath = getPackageBuildPath(pkg);
   const mlmapName = `${namespace}.mlmap`;
 
   const args = [
-    "-runtime",
-    runtimePath,
+    ...(runtimePath ? ["-runtime", runtimePath] : []),
     "-w",
     "-49",
     "-color",

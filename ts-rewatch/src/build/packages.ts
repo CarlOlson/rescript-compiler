@@ -8,13 +8,24 @@ import type {
   SourceFileMeta,
   ProjectContext,
   Module,
-  Namespace,
   BuildState,
 } from "../types/build.ts";
 import type { Config, Source, PackageSource } from "../types/config.ts";
-import { oneOrMoreToArray, toQualifiedWithoutChildren } from "../types/config.ts";
-import { parseConfigSync, getNamespace, getConfigPath } from "../config/parser.ts";
-import { isSourceFile, getExtension, packagePath, isLocalPackage } from "../utils/paths.ts";
+import {
+  oneOrMoreToArray,
+  toQualifiedWithoutChildren,
+} from "../types/config.ts";
+import {
+  parseConfigSync,
+  getNamespace,
+  getConfigPath,
+} from "../config/parser.ts";
+import {
+  isSourceFile,
+  getExtension,
+  packagePath,
+  isLocalPackage,
+} from "../utils/paths.ts";
 import { filePathToModuleName, namespaceToSuffix } from "../utils/helpers.ts";
 
 /**
@@ -30,10 +41,7 @@ export function readConfig(packageDir: string): Config {
 /**
  * Get source directories from config sources
  */
-function getSourceDirs(
-  source: Source,
-  subPath?: string,
-): Set<PackageSource> {
+function getSourceDirs(source: Source, subPath?: string): Set<PackageSource> {
   const result = new Set<PackageSource>();
 
   const sourceFolder = toQualifiedWithoutChildren(source, subPath);
@@ -75,7 +83,12 @@ function readSourceFiles(
     for (const entry of entries) {
       if (entry.isDirectory() && recurse) {
         const subDir = path.join(sourceDir, entry.name);
-        const subFiles = readSourceFiles(packageDir, subDir, recurse, isTypeDev);
+        const subFiles = readSourceFiles(
+          packageDir,
+          subDir,
+          recurse,
+          isTypeDev,
+        );
         for (const [key, value] of subFiles) {
           result.set(key, value);
         }
@@ -102,7 +115,7 @@ function readSourceFiles(
 /**
  * Read package name from package.json or rescript.json
  */
-function readPackageName(packageDir: string): string {
+function _readPackageName(packageDir: string): string {
   // Try package.json first
   try {
     const pkgJsonPath = path.join(packageDir, "package.json");
@@ -221,10 +234,14 @@ export function discoverPackages(
   registeredDeps.add(rootPackage.name);
 
   // Process dependencies recursively
-  const processPackage = (pkgConfig: Config, pkgPath: string, isLocalDep: boolean) => {
+  const processPackage = (
+    pkgConfig: Config,
+    pkgPath: string,
+    isLocalDep: boolean,
+  ) => {
     const deps = [
       ...(pkgConfig.dependencies ?? []),
-      ...(isLocalDep ? pkgConfig["dev-dependencies"] ?? [] : []),
+      ...(isLocalDep ? (pkgConfig["dev-dependencies"] ?? []) : []),
     ];
 
     for (const depName of deps) {
@@ -301,7 +318,13 @@ export function parsePackages(
     }
 
     // Group files by module
-    const moduleFiles = new Map<string, { impl?: SourceFileMeta & { path: string }, iface?: SourceFileMeta & { path: string } }>();
+    const moduleFiles = new Map<
+      string,
+      {
+        impl?: SourceFileMeta & { path: string };
+        iface?: SourceFileMeta & { path: string };
+      }
+    >();
 
     for (const [filePath, meta] of sourceFiles) {
       const moduleName = filePathToModuleName(filePath, pkg.namespace);

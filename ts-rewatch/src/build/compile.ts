@@ -10,7 +10,11 @@ import {
   getPackageOcamlBuildPath,
   namespaceToSuffix,
 } from "../types/build.ts";
-import { getBasename, containsAsciiCharacters, getSourceFileFromRescriptFile } from "../utils/paths.ts";
+import {
+  getBasename,
+  containsAsciiCharacters,
+  getSourceFileFromRescriptFile,
+} from "../utils/paths.ts";
 import {
   flattenFlags,
   getPackageSpecs,
@@ -48,7 +52,11 @@ function getCompilerArgs(
   const sourceFile = module.sourceType.sourceFile;
   const specs = getPackageSpecs(rootConfig);
   const bscFlags = flattenFlags(pkg.config["compiler-flags"]);
-  const warningArgs = getWarningArgs(pkg.config, pkg.isLocalDep, warnErrorOverride);
+  const warningArgs = getWarningArgs(
+    pkg.config,
+    pkg.isLocalDep,
+    warnErrorOverride,
+  );
 
   // Include paths for dependencies
   const includePaths: string[] = [];
@@ -75,15 +83,16 @@ function getCompilerArgs(
   const includeArgs = includePaths.flatMap((p) => ["-I", p]);
 
   // Get suffix for output
-  const suffix = getSuffix(rootConfig, specs[0] || { module: "esmodule" });
+  const _suffix = getSuffix(rootConfig, specs[0] || { module: "esmodule" });
   const implBasename = getBasename(sourceFile.implementation.path);
   const namespace = pkg.namespace;
-  const assetName = getAssetName(implBasename, namespace);
+  const _assetName = getAssetName(implBasename, namespace);
+
+  const {runtimePath} = buildState.compilerInfo;
 
   // Build args
   const args: string[] = [
-    "-runtime",
-    buildState.compilerInfo.runtimePath,
+    ...(runtimePath ? ["-runtime", runtimePath] : []),
     ...includeArgs,
     ...warningArgs,
     ...bscFlags,
@@ -129,7 +138,10 @@ function compileModule(
 
   const pkg = buildState.packages.get(module.packageName);
   if (pkg === undefined) {
-    return { success: false, stderr: `Package not found: ${module.packageName}` };
+    return {
+      success: false,
+      stderr: `Package not found: ${module.packageName}`,
+    };
   }
 
   if (module.sourceType.type === "mlMap") {
@@ -270,7 +282,7 @@ function getReadyModules(
 export function compile(
   buildState: BuildState,
   warnErrorOverride?: string,
-  showProgress: boolean = false,
+  _showProgress: boolean = false,
   onProgress?: () => void,
 ): CompileResult {
   // Get dirty modules
@@ -333,7 +345,7 @@ export function compile(
       const result = compileModule(buildState, moduleName, warnErrorOverride);
 
       if (!result.success) {
-        errors += result.stderr + "\n";
+        errors += `${result.stderr}\n`;
         logAppend(pkg, result.stderr);
 
         // Update module state
@@ -341,7 +353,7 @@ export function compile(
           module.sourceType.sourceFile.implementation.compileState = "error";
         }
       } else if (result.stderr) {
-        warnings += result.stderr + "\n";
+        warnings += `${result.stderr}\n`;
         logAppend(pkg, result.stderr);
 
         // Update module state

@@ -164,9 +164,7 @@ export function oneOrMoreToArray<T>(value: OneOrMore<T> | undefined): T[] {
 /**
  * Flatten flags from config (OneOrMore<string>[])
  */
-export function flattenFlags(
-  flags: OneOrMore<string>[] | undefined,
-): string[] {
+export function flattenFlags(flags: OneOrMore<string>[] | undefined): string[] {
   if (!flags) {
     return [];
   }
@@ -376,14 +374,14 @@ export function namespaceFromPackageName(packageName: string): string {
 /**
  * Check if a string is UpperFlat case (all uppercase with no separators)
  */
-function isUpperFlatCase(s: string): boolean {
+function _isUpperFlatCase(s: string): boolean {
   return /^[A-Z][A-Z0-9]*$/.test(s);
 }
 
 /**
  * Convert to PascalCase
  */
-function toPascalCase(s: string): string {
+function _toPascalCase(s: string): string {
   return s
     .split(/[-_\s]+/)
     .map((part) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())

@@ -8,14 +8,9 @@ import type {
   Config,
   Source,
   PackageSource,
-  OneOrMore,
   PackageSpec,
-  Subdirs,
 } from "../types/config.ts";
-import {
-  oneOrMoreToArray,
-  namespaceFromPackageName,
-} from "../types/config.ts";
+import { oneOrMoreToArray, namespaceFromPackageName } from "../types/config.ts";
 import type { Namespace } from "../types/build.ts";
 
 /**
@@ -75,7 +70,9 @@ function validatePackageSpecs(config: Config): void {
     const key = `${suffix}:${inSource}`;
 
     if (seen.has(key)) {
-      throw new Error(`Duplicate package-spec suffix "${suffix}" is not allowed.`);
+      throw new Error(
+        `Duplicate package-spec suffix "${suffix}" is not allowed.`,
+      );
     }
     seen.add(key);
   }
@@ -220,8 +217,7 @@ export function getDirectoriesForSource(
   // If subdirs is an array, add each subdir
   if (Array.isArray(source.subdirs)) {
     for (const subdir of source.subdirs) {
-      const subdirPath =
-        typeof subdir === "string" ? subdir : subdir.dir;
+      const subdirPath = typeof subdir === "string" ? subdir : subdir.dir;
       result.push(path.join(baseDir, subdirPath));
     }
   }
@@ -249,7 +245,10 @@ export function getSubdirs(source: PackageSource): Source[] {
 /**
  * Check if a path is within a dev source
  */
-export function isPathInDevSource(config: Config, relativePath: string): boolean {
+export function isPathInDevSource(
+  config: Config,
+  relativePath: string,
+): boolean {
   const sources = config.sources;
   if (sources === undefined) {
     return false;
@@ -301,7 +300,9 @@ function isPathInSource(source: PackageSource, targetPath: string): boolean {
   const relativePath = normalizedTarget.slice(normalizedDir.length + 1);
   return source.subdirs.some((subdir) => {
     if (typeof subdir === "string") {
-      return relativePath === subdir || relativePath.startsWith(subdir + path.sep);
+      return (
+        relativePath === subdir || relativePath.startsWith(subdir + path.sep)
+      );
     }
     return isPathInSource(
       { ...subdir, dir: path.join(source.dir, subdir.dir) },

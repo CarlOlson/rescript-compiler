@@ -170,7 +170,10 @@ describe("getJsxModeArgs", () => {
   });
 
   test("returns mode args for classic", () => {
-    const config: Config = { name: "test", jsx: { version: 4, mode: "classic" } };
+    const config: Config = {
+      name: "test",
+      jsx: { version: 4, mode: "classic" },
+    };
     expect(getJsxModeArgs(config)).toEqual(["-bs-jsx-mode", "classic"]);
   });
 
@@ -205,7 +208,10 @@ describe("getJsxPreserveArgs", () => {
   });
 
   test("returns preserve args", () => {
-    const config: Config = { name: "test", jsx: { version: 4, preserve: true } };
+    const config: Config = {
+      name: "test",
+      jsx: { version: 4, preserve: true },
+    };
     expect(getJsxPreserveArgs(config)).toEqual(["-bs-jsx-preserve"]);
   });
 });

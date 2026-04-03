@@ -168,10 +168,7 @@ export function formatCycle(cycle: string[], buildState: BuildState): string {
       const displayName = formatNamespacedModuleName(name);
       const module = buildState.modules.get(name);
 
-      if (
-        module === undefined ||
-        module.sourceType.type !== "sourceFile"
-      ) {
+      if (module === undefined || module.sourceType.type !== "sourceFile") {
         return displayName;
       }
 

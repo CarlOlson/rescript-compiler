@@ -1,12 +1,16 @@
 // Port from rewatch/src/build.rs
 // Build orchestration
 
-import type { BuildState, BuildCommandState, ProjectContext } from "../types/build.ts";
+import type { BuildState } from "../types/build.ts";
 import { createBuildState } from "../types/build.ts";
 import { createProjectContext } from "../project/context.ts";
-import { getLock, formatLockError, type LockResult } from "../project/lock.ts";
+import { getLock, formatLockError } from "../project/lock.ts";
 import { discoverPackages, parsePackages } from "./packages.ts";
-import { getCompilerInfo, verifyCompilerInfo, writeCompilerInfoSync } from "./compilerInfo.ts";
+import {
+  getCompilerInfo,
+  verifyCompilerInfo,
+  writeCompilerInfoSync,
+} from "./compilerInfo.ts";
 import { initialize as initLogs, finalize as finalizeLogs } from "./logs.ts";
 import { generateAsts, type ParseResult } from "./parse.ts";
 import { getDeps } from "./deps.ts";
@@ -32,7 +36,7 @@ export interface BuildOptions {
  */
 export function initializeBuild(
   folder: string,
-  warnErrorOverride?: string,
+  _warnErrorOverride?: string,
 ): { buildState: BuildState; release: () => void } | { error: string } {
   // Acquire build lock
   const lockResult = getLock(folder);
@@ -188,4 +192,8 @@ export { compile } from "./compile.ts";
 export { generateAsts } from "./parse.ts";
 export { getDeps } from "./deps.ts";
 export { discoverPackages, parsePackages } from "./packages.ts";
-export { getCompilerInfo, verifyCompilerInfo, writeCompilerInfo } from "./compilerInfo.ts";
+export {
+  getCompilerInfo,
+  verifyCompilerInfo,
+  writeCompilerInfo,
+} from "./compilerInfo.ts";

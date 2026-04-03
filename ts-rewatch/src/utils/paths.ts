@@ -4,20 +4,6 @@
 import * as path from "node:path";
 
 /**
- * Strip Windows verbatim path prefix (\\?\)
- * On non-Windows systems, returns the original path unchanged.
- */
-export function stripVerbatimPath(p: string): string {
-  if (process.platform !== "win32") {
-    return p;
-  }
-  if (p.startsWith("\\\\?\\")) {
-    return p.slice(4);
-  }
-  return p;
-}
-
-/**
  * Convert to a lexical absolute path (resolves . and .. without filesystem access)
  */
 export function toLexicalAbsolute(p: string): string {
@@ -169,7 +155,7 @@ export function formatNamespacedModuleName(moduleName: string): string {
   const cleanNamespace = namespace.startsWith("@")
     ? namespace.slice(1)
     : namespace;
-  return cleanNamespace + "." + name;
+  return `${cleanNamespace}.${name}`;
 }
 
 /**
@@ -190,7 +176,7 @@ export function getSourceFileFromRescriptFile(
   const ext = suffix.startsWith(".") ? suffix.slice(1) : suffix;
   const dir = path.dirname(filePath);
   const basename = getBasename(filePath);
-  return path.join(dir, basename + "." + ext);
+  return path.join(dir, `${basename}.${ext}`);
 }
 
 /**

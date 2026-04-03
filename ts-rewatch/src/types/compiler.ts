@@ -49,5 +49,5 @@ export function sourceTypeToString(sourceType: SourceType): string {
 export interface CompilerInfo {
   bscPath: string;
   bscHash: string;
-  runtimePath: string;
+  runtimePath?: string;
 }

@@ -90,7 +90,7 @@ export function getLock(folder: string): LockResult {
     const contents = fs.readFileSync(lockPath, "utf-8");
     const parsedPid = parseInt(contents.trim(), 10);
 
-    if (isNaN(parsedPid)) {
+    if (Number.isNaN(parsedPid)) {
       return {
         acquired: false,
         error: {
@@ -163,7 +163,7 @@ export function isLocked(folder: string): boolean {
     const contents = fs.readFileSync(lockPath, "utf-8");
     const parsedPid = parseInt(contents.trim(), 10);
 
-    if (isNaN(parsedPid)) {
+    if (Number.isNaN(parsedPid)) {
       return false;
     }
 

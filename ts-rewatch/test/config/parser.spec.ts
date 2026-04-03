@@ -207,7 +207,10 @@ describe("getUnknownFields", () => {
   });
 
   test("does not include unsupported fields", () => {
-    const config = { name: "test", "ignored-dirs": ["scripts"] } as unknown as Config;
+    const config = {
+      name: "test",
+      "ignored-dirs": ["scripts"],
+    } as unknown as Config;
     expect(getUnknownFields(config)).toEqual([]);
   });
 });
@@ -219,7 +222,10 @@ describe("getUnsupportedFields", () => {
   });
 
   test("returns unsupported fields", () => {
-    const config = { name: "test", "ignored-dirs": ["scripts"] } as unknown as Config;
+    const config = {
+      name: "test",
+      "ignored-dirs": ["scripts"],
+    } as unknown as Config;
     expect(getUnsupportedFields(config)).toEqual(["ignored-dirs"]);
   });
 });
