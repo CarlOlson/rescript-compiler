@@ -9,6 +9,8 @@
     "erasableSyntaxOnly": true,
     "verbatimModuleSyntax": true,
     "allowImportingTsExtensions": true,
+    "types": ["jest", "node"]
   },
-  "include": ["src", "test"]
+  "include": ["src/**/*", "test/**/*"],
+  "exclude": ["node_modules"]
 }
