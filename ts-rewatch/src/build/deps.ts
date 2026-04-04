@@ -2,7 +2,7 @@
 // Module dependency analysis
 
 import * as path from "node:path";
-import type { BuildState, Module, Package } from "../types/build.ts";
+import type { BuildState, Package } from "../types/build.ts";
 import { getPackageBuildPath, namespaceToSuffix } from "../types/build.ts";
 import { getAstPath } from "../utils/paths.ts";
 import { readLinesSync } from "../utils/helpers.ts";
@@ -199,61 +199,4 @@ export function getDeps(
   }
 
   buildState.depsInitialized = true;
-}
-
-/**
- * Mark a module and all its dependents as compile dirty
- */
-export function markDirtyDependents(
-  moduleName: string,
-  modules: Map<string, Module>,
-  visited: Set<string> = new Set(),
-): void {
-  if (visited.has(moduleName)) {
-    return;
-  }
-  visited.add(moduleName);
-
-  const module = modules.get(moduleName);
-  if (module === undefined) {
-    return;
-  }
-
-  for (const dependent of module.dependents) {
-    const depModule = modules.get(dependent);
-    if (depModule !== undefined && !depModule.compileDirty) {
-      depModule.compileDirty = true;
-      markDirtyDependents(dependent, modules, visited);
-    }
-  }
-}
-
-/**
- * Get all transitive dependencies of a module
- */
-export function getTransitiveDeps(
-  moduleName: string,
-  modules: Map<string, Module>,
-  visited: Set<string> = new Set(),
-): Set<string> {
-  if (visited.has(moduleName)) {
-    return new Set();
-  }
-  visited.add(moduleName);
-
-  const module = modules.get(moduleName);
-  if (module === undefined) {
-    return new Set();
-  }
-
-  const result = new Set<string>();
-  for (const dep of module.deps) {
-    result.add(dep);
-    const transitive = getTransitiveDeps(dep, modules, visited);
-    for (const t of transitive) {
-      result.add(t);
-    }
-  }
-
-  return result;
 }

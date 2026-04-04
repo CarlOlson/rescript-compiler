@@ -1,8 +1,7 @@
 // Port from rewatch/src/config.rs
 // Configuration parsing and validation
 
-import * as fs from "node:fs/promises";
-import * as fsSync from "node:fs";
+import * as fs from "node:fs";
 import * as path from "node:path";
 import type {
   Config,
@@ -14,20 +13,10 @@ import { oneOrMoreToArray, namespaceFromPackageName } from "../types/config.ts";
 import type { Namespace } from "../types/build.ts";
 
 /**
- * Parse a rescript.json file
- */
-export async function parseConfig(filePath: string): Promise<Config> {
-  const content = await fs.readFile(filePath, "utf-8");
-  const config = parseConfigFromString(content);
-  config.path = filePath;
-  return config;
-}
-
-/**
  * Parse a rescript.json file synchronously
  */
 export function parseConfigSync(filePath: string): Config {
-  const content = fsSync.readFileSync(filePath, "utf-8");
+  const content = fs.readFileSync(filePath, "utf-8");
   const config = parseConfigFromString(content);
   config.path = filePath;
   return config;
@@ -203,43 +192,10 @@ function flattenSource(
 }
 
 /**
- * Get the directories to watch/scan for a package source
- */
-export function getDirectoriesForSource(
-  packageDir: string,
-  source: PackageSource,
-): string[] {
-  const baseDir = path.join(packageDir, source.dir);
-  const result: string[] = [baseDir];
-
-  // If subdirs is true (recurse), we need to scan recursively
-  // This is handled during scanning, not here
-  // If subdirs is an array, add each subdir
-  if (Array.isArray(source.subdirs)) {
-    for (const subdir of source.subdirs) {
-      const subdirPath = typeof subdir === "string" ? subdir : subdir.dir;
-      result.push(path.join(baseDir, subdirPath));
-    }
-  }
-
-  return result;
-}
-
-/**
  * Check if a source folder should recurse into subdirectories
  */
 export function shouldRecurse(source: PackageSource): boolean {
   return source.subdirs === true;
-}
-
-/**
- * Get all subdirs as Source array
- */
-export function getSubdirs(source: PackageSource): Source[] {
-  if (Array.isArray(source.subdirs)) {
-    return source.subdirs;
-  }
-  return [];
 }
 
 /**
@@ -316,13 +272,6 @@ function isPathInSource(source: PackageSource, targetPath: string): boolean {
  */
 export function getConfigPath(dir: string): string {
   return path.join(dir, "rescript.json");
-}
-
-/**
- * Check if a directory has a rescript.json file
- */
-export function hasConfig(dir: string): boolean {
-  return fsSync.existsSync(getConfigPath(dir));
 }
 
 /**

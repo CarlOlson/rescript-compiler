@@ -88,7 +88,7 @@ function getCompilerArgs(
   const namespace = pkg.namespace;
   const _assetName = getAssetName(implBasename, namespace);
 
-  const {runtimePath} = buildState.compilerInfo;
+  const { runtimePath } = buildState.compilerInfo;
 
   // Build args
   const args: string[] = [

@@ -1,11 +1,10 @@
 // Port from rewatch/src/helpers.rs
 // General utility functions
 
-import * as fs from "node:fs/promises";
-import * as fsSync from "node:fs";
+import * as fs from "node:fs";
 import * as path from "node:path";
 import { getBasename, capitalize } from "./paths.ts";
-import { createRequire } from 'node:module';
+import { createRequire } from "node:module";
 import type { Namespace } from "../types/build.ts";
 
 // Emoji constants for console output
@@ -27,11 +26,10 @@ export const emojis = {
  */
 export function getBsc(): string {
   const require = createRequire(path.join(process.cwd(), "./package.json"));
-  const envBsc =
-    process.env.RESCRIPT_BSC_EXE ?? require.resolve(".bin/bsc");
-    // require.resolve("rescript/bsc"); // 11.x
+  const envBsc = process.env.RESCRIPT_BSC_EXE ?? require.resolve(".bin/bsc");
+  // require.resolve("rescript/bsc"); // 11.x
   if (envBsc) {
-    const resolved = fsSync.realpathSync(envBsc);
+    const resolved = fs.realpathSync(envBsc);
     return resolved;
   } else if (process.env.RESCRIPT_BSC_EXE) {
     throw new Error(
@@ -47,10 +45,10 @@ export function getBsc(): string {
  */
 export function getRuntimePath(): string | undefined {
   const envRuntime = process.env.RESCRIPT_RUNTIME;
-  if (envRuntime?.trim() === '') {
+  if (envRuntime?.trim() === "") {
     return undefined;
   } else if (envRuntime) {
-    return fsSync.realpathSync(envRuntime);
+    return fs.realpathSync(envRuntime);
   } else if (process.env.RESCRIPT_RUNTIME) {
     throw new Error(
       `Could not find runtime, RESCRIPT_RUNTIME=${process.env.RESCRIPT_RUNTIME}`,
@@ -59,9 +57,12 @@ export function getRuntimePath(): string | undefined {
     try {
       const require = createRequire(path.join(process.cwd(), "./package.json"));
       const runtime = require.resolve("@rescript/runtime/package.json");
-      return fsSync.realpathSync(runtime);
+      return fs.realpathSync(runtime);
     } catch (cause) {
-      throw new Error("Could not find @rescript/runtime, try setting RESCRIPT_RUNTIME", { cause });
+      throw new Error(
+        "Could not find @rescript/runtime, try setting RESCRIPT_RUNTIME",
+        { cause },
+      );
     }
   }
 }
@@ -69,7 +70,7 @@ export function getRuntimePath(): string | undefined {
 /**
  * Add namespace suffix to a base name
  */
-export function addSuffix(base: string, namespace: Namespace): string {
+function addSuffix(base: string, namespace: Namespace): string {
   if (namespace.type === "noNamespace") {
     return base;
   }
@@ -98,21 +99,11 @@ export function namespaceToSuffix(namespace: Namespace): string | undefined {
 }
 
 /**
- * Get the module name with namespace suffix
- */
-export function moduleNameWithNamespace(
-  moduleName: string,
-  namespace: Namespace,
-): string {
-  return capitalize(addSuffix(moduleName, namespace));
-}
-
-/**
  * Get the compiler asset basename from a file path
  * This doesn't capitalize the module name! If the rescript name of the file is "foo.res",
  * the compiler assets are foo-Namespace.cmt and foo-Namespace.cmj, but the module name is Foo
  */
-export function filePathToCompilerAssetBasename(
+function filePathToCompilerAssetBasename(
   filePath: string,
   namespace: Namespace,
 ): string {
@@ -131,47 +122,25 @@ export function filePathToModuleName(
 }
 
 /**
- * Read lines from a file
- */
-export async function readLines(filePath: string): Promise<string[]> {
-  const content = await fs.readFile(filePath, "utf-8");
-  return content.split("\n");
-}
-
-/**
  * Read lines from a file synchronously
  */
 export function readLinesSync(filePath: string): string[] {
-  const content = fsSync.readFileSync(filePath, "utf-8");
+  const content = fs.readFileSync(filePath, "utf-8");
   return content.split("\n");
-}
-
-/**
- * Read file contents as string
- */
-export async function readFile(filePath: string): Promise<string> {
-  return await fs.readFile(filePath, "utf-8");
 }
 
 /**
  * Read file contents as string synchronously
  */
 export function readFileSync(filePath: string): string {
-  return fsSync.readFileSync(filePath, "utf-8");
-}
-
-/**
- * Create a directory path recursively
- */
-export async function createPath(dirPath: string): Promise<void> {
-  await fs.mkdir(dirPath, { recursive: true });
+  return fs.readFileSync(filePath, "utf-8");
 }
 
 /**
  * Create a directory path recursively (synchronous)
  */
 export function createPathSync(dirPath: string): void {
-  fsSync.mkdirSync(dirPath, { recursive: true });
+  fs.mkdirSync(dirPath, { recursive: true });
 }
 
 /**
@@ -184,8 +153,8 @@ export function getSystemTime(): number {
 /**
  * Check if a rescript.json config exists in a directory
  */
-export function hasRescriptConfig(dirPath: string): boolean {
-  return fsSync.existsSync(path.join(dirPath, "rescript.json"));
+function hasRescriptConfig(dirPath: string): boolean {
+  return fs.existsSync(path.join(dirPath, "rescript.json"));
 }
 
 /**
@@ -194,6 +163,7 @@ export function hasRescriptConfig(dirPath: string): boolean {
  */
 export function getNearestConfig(startPath: string): string | undefined {
   let currentDir = startPath;
+  // biome-ignore lint: n/a
   while (true) {
     if (hasRescriptConfig(currentDir)) {
       return currentDir;
@@ -211,6 +181,6 @@ export function getNearestConfig(startPath: string): string | undefined {
  * Get the modification time of a file (synchronous)
  */
 export function getLastModifiedSync(filePath: string): number {
-  const stats = fsSync.statSync(filePath);
+  const stats = fs.statSync(filePath);
   return stats.mtimeMs;
 }

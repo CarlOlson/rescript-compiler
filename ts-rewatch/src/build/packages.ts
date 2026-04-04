@@ -31,7 +31,7 @@ import { filePathToModuleName, namespaceToSuffix } from "../utils/helpers.ts";
 /**
  * Read a rescript.json config from a directory
  */
-export function readConfig(packageDir: string): Config {
+function readConfig(packageDir: string): Config {
   const configPath = getConfigPath(packageDir);
   const config = parseConfigSync(configPath);
   config.path = configPath;

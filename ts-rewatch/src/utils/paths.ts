@@ -4,16 +4,6 @@
 import * as path from "node:path";
 
 /**
- * Convert to a lexical absolute path (resolves . and .. without filesystem access)
- */
-export function toLexicalAbsolute(p: string): string {
-  if (path.isAbsolute(p)) {
-    return path.normalize(p);
-  }
-  return path.resolve(p);
-}
-
-/**
  * Capitalizes the first character of a string.
  */
 export function capitalize(s: string): string {
@@ -192,11 +182,4 @@ export function isLocalPackage(
   // Check if path contains "node_modules"
   const parts = canonicalPackagePath.split(path.sep);
   return !parts.includes("node_modules");
-}
-
-/**
- * Get relative path from one path to another
- */
-export function getRelativePath(from: string, to: string): string {
-  return path.relative(from, to);
 }

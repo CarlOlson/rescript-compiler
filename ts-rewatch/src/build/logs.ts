@@ -24,18 +24,12 @@ function getLogFilePath(pkg: Package, location: Location): string {
 }
 
 /**
- * Check if the ocaml build compiler log exists
- */
-export function doesOcamlBuildCompilerLogExist(pkg: Package): boolean {
-  return fs.existsSync(getLogFilePath(pkg, "ocaml"));
-}
-
-/**
  * Escape ANSI color codes from a string
  */
 function escapeColours(str: string): string {
   // Match ANSI escape sequences
   return str.replace(
+    // biome-ignore lint: n/a
     /[\u001b\u009b]\[[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g,
     "",
   );
@@ -72,21 +66,6 @@ export function initialize(packages: Map<string, Package>): void {
 }
 
 /**
- * Initialize compiler log for a single package
- */
-export function initializePackage(pkg: Package): void {
-  const logPath = getLogFilePath(pkg, "bs");
-  const dir = path.dirname(logPath);
-
-  try {
-    createPathSync(dir);
-    fs.writeFileSync(logPath, `#Start(${getSystemTime()})\n`);
-  } catch (e) {
-    throw new Error(`Cannot create compiler log for package ${pkg.name}: ${e}`);
-  }
-}
-
-/**
  * Append content to a package's compiler log
  */
 export function append(pkg: Package, content: string): void {
@@ -111,7 +90,7 @@ export function finalize(packages: Map<string, Package>): void {
 /**
  * Finalize compiler log for a single package
  */
-export function finalizePackage(pkg: Package): void {
+function finalizePackage(pkg: Package): void {
   const bsLogPath = getLogFilePath(pkg, "bs");
   const ocamlLogPath = getLogFilePath(pkg, "ocaml");
 
@@ -125,31 +104,5 @@ export function finalizePackage(pkg: Package): void {
     fs.copyFileSync(bsLogPath, ocamlLogPath);
   } catch {
     // Ignore errors in finalization
-  }
-}
-
-/**
- * Get the content of a package's compiler log
- */
-export function getLogContent(pkg: Package): string | undefined {
-  const logPath = getLogFilePath(pkg, "bs");
-
-  try {
-    return fs.readFileSync(logPath, "utf-8");
-  } catch {
-    return undefined;
-  }
-}
-
-/**
- * Clear the compiler log for a package
- */
-export function clearLog(pkg: Package): void {
-  const logPath = getLogFilePath(pkg, "bs");
-
-  try {
-    fs.writeFileSync(logPath, "");
-  } catch {
-    // Ignore errors
   }
 }

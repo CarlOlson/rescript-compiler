@@ -12,9 +12,9 @@ import {
   writeCompilerInfoSync,
 } from "./compilerInfo.ts";
 import { initialize as initLogs, finalize as finalizeLogs } from "./logs.ts";
-import { generateAsts, type ParseResult } from "./parse.ts";
+import { generateAsts } from "./parse.ts";
 import { getDeps } from "./deps.ts";
-import { compile, type CompileResult } from "./compile.ts";
+import { compile } from "./compile.ts";
 import { cleanupAfterBuild } from "./clean.ts";
 import { emojis } from "../utils/helpers.ts";
 
@@ -34,7 +34,7 @@ export interface BuildOptions {
 /**
  * Initialize a build state
  */
-export function initializeBuild(
+function initializeBuild(
   folder: string,
   _warnErrorOverride?: string,
 ): { buildState: BuildState; release: () => void } | { error: string } {
@@ -79,7 +79,7 @@ export function initializeBuild(
 /**
  * Run an incremental build
  */
-export function incrementalBuild(
+function incrementalBuild(
   buildState: BuildState,
   options: BuildOptions = {},
 ): BuildResult {
@@ -185,15 +185,4 @@ export function build(folder: string, options: BuildOptions = {}): BuildResult {
     initResult.release();
   }
 }
-
 // Re-export types and functions
-export type { ParseResult, CompileResult };
-export { compile } from "./compile.ts";
-export { generateAsts } from "./parse.ts";
-export { getDeps } from "./deps.ts";
-export { discoverPackages, parsePackages } from "./packages.ts";
-export {
-  getCompilerInfo,
-  verifyCompilerInfo,
-  writeCompilerInfo,
-} from "./compilerInfo.ts";

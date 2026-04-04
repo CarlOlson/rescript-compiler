@@ -74,49 +74,14 @@ export interface Config {
   path?: string;
 }
 
-// Helper functions
-
-/**
- * Check if a PackageSource is type dev
- */
-export function isTypeDev(source: PackageSource): boolean {
-  return source.type === "dev";
-}
-
-/**
- * Check if a Source is type dev
- */
-export function sourceIsTypeDev(source: Source): boolean {
-  if (typeof source === "string") {
-    return false;
-  }
-  return isTypeDev(source);
-}
-
 /**
  * Get the type from a source
  */
-export function getSourceType(source: Source): string | undefined {
+function getSourceType(source: Source): string | undefined {
   if (typeof source === "string") {
     return undefined;
   }
   return source.type;
-}
-
-/**
- * Set the type on a source
- */
-export function setSourceType(
-  source: Source,
-  type: string | undefined,
-): Source {
-  if (type === undefined) {
-    return source;
-  }
-  if (typeof source === "string") {
-    return { dir: source, type };
-  }
-  return { ...source, type };
 }
 
 /**
@@ -175,37 +140,9 @@ export function flattenFlags(flags: OneOrMore<string>[] | undefined): string[] {
 }
 
 /**
- * Get PackageSpec module as string
- */
-export function packageModuleAsStr(module: PackageModule): string {
-  return module;
-}
-
-/**
- * Get the output directory for out-of-source builds
- */
-export function getOutOfSourceDir(spec: PackageSpec): string {
-  return spec.module === "commonjs" ? "js" : "es6";
-}
-
-/**
- * Check if a spec is CommonJS
- */
-export function isCommonJs(spec: PackageSpec): boolean {
-  return spec.module === "commonjs";
-}
-
-/**
- * Get the suffix for a spec
- */
-export function getSpecSuffix(spec: PackageSpec): string | undefined {
-  return spec.suffix;
-}
-
-/**
  * Default suffix is .js
  */
-export const DEFAULT_SUFFIX = ".js";
+const DEFAULT_SUFFIX = ".js";
 
 /**
  * Get package specs from config with defaults
@@ -369,21 +306,4 @@ export function namespaceFromPackageName(packageName: string): string {
   }
 
   return result;
-}
-
-/**
- * Check if a string is UpperFlat case (all uppercase with no separators)
- */
-function _isUpperFlatCase(s: string): boolean {
-  return /^[A-Z][A-Z0-9]*$/.test(s);
-}
-
-/**
- * Convert to PascalCase
- */
-function _toPascalCase(s: string): string {
-  return s
-    .split(/[-_\s]+/)
-    .map((part) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
-    .join("");
 }

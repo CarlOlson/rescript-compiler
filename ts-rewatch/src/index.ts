@@ -77,7 +77,7 @@ function main(): void {
     .option("--no-timing", "Disable timing output")
     .argument("[folder]", "Project folder", ".")
     .action((folder: string, cmdOptions: Record<string, unknown>) => {
-        process.chdir(folder);
+      process.chdir(folder);
       // Merge parent options with command options
       const parentOptions = program.opts();
       handleBuild(folder, {

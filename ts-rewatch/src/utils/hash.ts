@@ -2,22 +2,7 @@
 // File hashing using blake3
 
 import { blake3 } from "@napi-rs/blake-hash";
-import * as fs from "node:fs/promises";
-
-/**
- * Compute blake3 hash of file contents.
- * Returns undefined if the file cannot be read.
- */
-export async function computeFileHash(
-  filePath: string,
-): Promise<string | undefined> {
-  try {
-    const contents = await fs.readFile(filePath);
-    return blake3(contents).toString("hex");
-  } catch {
-    return undefined;
-  }
-}
+import * as fs from "node:fs";
 
 /**
  * Compute blake3 hash of file contents synchronously.
@@ -25,16 +10,9 @@ export async function computeFileHash(
  */
 export function computeFileHashSync(filePath: string): string | undefined {
   try {
-    const contents = require("node:fs").readFileSync(filePath);
+    const contents = fs.readFileSync(filePath);
     return blake3(contents).toString("hex");
   } catch {
     return undefined;
   }
-}
-
-/**
- * Compute blake3 hash of a string/buffer
- */
-export function computeHash(data: Buffer | string): string {
-  return blake3(data).toString("hex");
 }

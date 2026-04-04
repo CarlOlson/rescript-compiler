@@ -42,10 +42,6 @@ export type SourceType =
   | { type: "sourceFile"; sourceFile: SourceFile }
   | { type: "mlMap"; mlMap: MlMap };
 
-export function sourceTypeToString(sourceType: SourceType): string {
-  return sourceType.type === "sourceFile" ? "SourceFile" : "MlMap";
-}
-
 export interface CompilerInfo {
   bscPath: string;
   bscHash: string;

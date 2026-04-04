@@ -1,8 +1,7 @@
 // Port from rewatch/src/build/compiler_info.rs
 // Compiler version tracking and build artifact validation
 
-import * as fs from "node:fs/promises";
-import * as fsSync from "node:fs";
+import * as fs from "node:fs";
 import * as path from "node:path";
 import type { CompilerInfo, Package, BuildState } from "../types/build.ts";
 import {
@@ -45,7 +44,7 @@ function getRescriptConfigHash(pkg: Package): string | undefined {
 function doesOcamlBuildCompilerLogExist(pkg: Package): boolean {
   const buildPath = getPackageBuildPath(pkg);
   const compilerLogPath = path.join(buildPath, ".compiler.log");
-  return fsSync.existsSync(compilerLogPath);
+  return fs.existsSync(compilerLogPath);
 }
 
 /**
@@ -77,7 +76,7 @@ export function verifyCompilerInfo(
 
     let contents: string;
     try {
-      contents = fsSync.readFileSync(infoPath, "utf-8");
+      contents = fs.readFileSync(infoPath, "utf-8");
     } catch {
       // Can't read compiler-info.json, check if ocaml build exists
       if (doesOcamlBuildCompilerLogExist(pkg)) {
@@ -143,69 +142,10 @@ export function verifyCompilerInfo(
 function cleanPackageQuiet(pkg: Package): void {
   const buildPath = getPackageBuildPath(pkg);
   try {
-    fsSync.rmSync(buildPath, { recursive: true, force: true });
+    fs.rmSync(buildPath, { recursive: true, force: true });
   } catch {
     // Ignore errors
   }
-}
-
-/**
- * Write compiler info for all packages
- */
-export async function writeCompilerInfo(buildState: BuildState): Promise<void> {
-  const { bscPath, bscHash, runtimePath } = buildState.compilerInfo;
-  const generatedAt = getSystemTime().toString();
-
-  const writePromises = Array.from(buildState.packages.values()).map(
-    async (pkg) => {
-      const rescriptConfigHash = getRescriptConfigHash(pkg);
-      if (rescriptConfigHash === undefined) {
-        return;
-      }
-
-      const info: CompilerInfoFile = {
-        version: VERSION,
-        bsc_path: bscPath,
-        bsc_hash: bscHash,
-        rescript_config_hash: rescriptConfigHash,
-        runtime_path: runtimePath,
-        generated_at: generatedAt,
-      };
-
-      const contents = JSON.stringify(info, null, 2);
-      const infoPath = getPackageCompilerInfoPath(pkg);
-
-      // Check if we need to write
-      try {
-        const existing = await fs.readFile(infoPath, "utf-8");
-        if (existing === contents) {
-          return; // No change needed
-        }
-      } catch {
-        // File doesn't exist or can't be read, proceed with write
-      }
-
-      // Ensure directory exists
-      const dir = path.dirname(infoPath);
-      await fs.mkdir(dir, { recursive: true });
-
-      // Write atomically using temp file + rename
-      const tmpPath = `${infoPath}.tmp`;
-      try {
-        await fs.writeFile(tmpPath, contents);
-        await fs.rename(tmpPath, infoPath);
-      } catch {
-        // Clean up temp file on error
-        try {
-          await fs.unlink(tmpPath);
-        } catch {
-          // Ignore
-        }
-      }
-    },
-  );
-
-  await Promise.all(writePromises);
 }
 
 /**
@@ -235,7 +175,7 @@ export function writeCompilerInfoSync(buildState: BuildState): void {
 
     // Check if we need to write
     try {
-      const existing = fsSync.readFileSync(infoPath, "utf-8");
+      const existing = fs.readFileSync(infoPath, "utf-8");
       if (existing === contents) {
         continue; // No change needed
       }
@@ -245,17 +185,17 @@ export function writeCompilerInfoSync(buildState: BuildState): void {
 
     // Ensure directory exists
     const dir = path.dirname(infoPath);
-    fsSync.mkdirSync(dir, { recursive: true });
+    fs.mkdirSync(dir, { recursive: true });
 
     // Write atomically using temp file + rename
     const tmpPath = `${infoPath}.tmp`;
     try {
-      fsSync.writeFileSync(tmpPath, contents);
-      fsSync.renameSync(tmpPath, infoPath);
+      fs.writeFileSync(tmpPath, contents);
+      fs.renameSync(tmpPath, infoPath);
     } catch {
       // Clean up temp file on error
       try {
-        fsSync.unlinkSync(tmpPath);
+        fs.unlinkSync(tmpPath);
       } catch {
         // Ignore
       }

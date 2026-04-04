@@ -33,7 +33,7 @@ export interface ParseResult {
 /**
  * Get parser arguments for bsc -bs-ast
  */
-export function getParserArgs(
+function getParserArgs(
   buildState: BuildState,
   pkg: Package,
   filename: string,
