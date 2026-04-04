@@ -7,16 +7,18 @@
     "@swc/core": "1.15.11",
     "@swc/jest": "0.2.39",
     "@types/jest": "30.0.0",
+    "@types/node": "25.5.0",
     "@typescript/native-preview": "7.0.0-dev.20260320.1",
     "jest": "30.2.0",
-    "memfs": "4.56.11",
+    "knip": "6.0.1",
     "typescript": "5.9.3"
   },
   "scripts": {
     "test": "yarn node --experimental-vm-modules $(yarn bin jest)",
     "format": "biome format --write",
     "lint": "biome lint",
-    "typecheck": "tsgo --noEmit --project tsconfig.json"
+    "typecheck": "tsgo --noEmit --project tsconfig.json",
+    "knip": "knip"
   },
   "dependencies": {
     "@napi-rs/blake-hash": "1.3.6",
