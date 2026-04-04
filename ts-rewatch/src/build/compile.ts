@@ -109,8 +109,6 @@ export function getCompilerArgs(
     sourceFile.implementation.path.replace(/\.res$/, ".ast"),
   ];
 
-  console.log(args.join(" "));
-
   return args;
 }
 
@@ -171,13 +169,15 @@ function compileModule(
   const basename = getBasename(sourceFile.implementation.path);
   const assetName = getAssetName(basename, pkg.namespace);
   const ocamlBuildPath = getPackageOcamlBuildPath(pkg);
+  // Artifacts are generated in the same directory as the AST file (e.g., lib/bs/src/)
+  const sourceDir = path.dirname(sourceFile.implementation.path);
 
   createPathSync(ocamlBuildPath);
 
   for (const ext of ["cmi", "cmt", "cmj", "cmti"]) {
     try {
       fs.copyFileSync(
-        path.join(buildPath, `${assetName}.${ext}`),
+        path.join(buildPath, sourceDir, `${assetName}.${ext}`),
         path.join(ocamlBuildPath, `${assetName}.${ext}`),
       );
     } catch {
@@ -201,7 +201,7 @@ function compileModule(
 
       try {
         fs.copyFileSync(
-          path.join(buildPath, `${assetName}${suffix}`),
+          path.join(buildPath, sourceDir, `${assetName}${suffix}`),
           srcJsPath,
         );
       } catch {
@@ -372,6 +372,9 @@ export function compile(
         // Update last compiled times
         const buildPath = getPackageBuildPath(pkg);
         if (module.sourceType.type === "sourceFile") {
+          const sourceDir = path.dirname(
+            module.sourceType.sourceFile.implementation.path,
+          );
           const basename = getBasename(
             module.sourceType.sourceFile.implementation.path,
           );
@@ -379,14 +382,14 @@ export function compile(
 
           try {
             module.lastCompiledCmi = getLastModifiedSync(
-              path.join(buildPath, `${assetName}.cmi`),
+              path.join(buildPath, sourceDir, `${assetName}.cmi`),
             );
           } catch {
             // Ignore
           }
           try {
             module.lastCompiledCmt = getLastModifiedSync(
-              path.join(buildPath, `${assetName}.cmt`),
+              path.join(buildPath, sourceDir, `${assetName}.cmt`),
             );
           } catch {
             // Ignore

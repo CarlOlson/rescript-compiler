@@ -165,8 +165,6 @@ function generateAst(
     warnErrorOverride,
   );
 
-  console.log(args.join(" "));
-
   // Create directory for AST file
   const astDir = path.join(buildPath, path.dirname(astPath));
   createPathSync(astDir);

@@ -6,6 +6,7 @@ import * as path from "node:path";
 import type { Package } from "../types/build.ts";
 import { getPackageBuildPath } from "../types/build.ts";
 import { createPathSync } from "../utils/helpers.ts";
+import { spawnSync } from "node:child_process";
 
 /**
  * Generate mlmap file content for a namespace.
@@ -55,7 +56,6 @@ export function compileMlmapSync(
   bscPath: string,
   runtimePath?: string,
 ): void {
-  const { spawnSync } = require("node:child_process");
   const buildPath = getPackageBuildPath(pkg);
   const mlmapName = `${namespace}.mlmap`;
 
