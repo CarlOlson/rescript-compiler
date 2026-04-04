@@ -60,7 +60,7 @@ export function compileMlmapSync(
   const mlmapName = `${namespace}.mlmap`;
 
   const args = [
-    ...(runtimePath ? ["-runtime", runtimePath] : []),
+    ...(runtimePath ? ["-runtime-path", runtimePath] : []),
     "-w",
     "-49",
     "-color",

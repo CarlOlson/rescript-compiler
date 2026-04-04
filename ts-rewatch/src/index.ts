@@ -4,7 +4,11 @@
 
 import { Command } from "commander";
 import { build, type BuildOptions } from "./build/index.ts";
+import { getCompilerArgs } from "./build/compile.ts";
+import { getParserArgs } from "./build/parse.ts";
 import { emojis } from "./utils/helpers.ts";
+import * as fs from "node:fs";
+import * as path from "node:path";
 
 const VERSION = "0.1.0";
 
@@ -87,12 +91,26 @@ function main(): void {
     });
 
   program
+    .command("compiler-args")
+    .argument("[file]", "Module file")
+    .argument("[folder]", "Project folder", ".")
+    .action((file: string, folder: string) => {
+      console.log({
+        compiler_args: getCompilerArgs(),
+        parser_args: getParserArgs(),
+      });
+    });
+
+  program
     .command("clean")
     .description("Clean build artifacts")
     .argument("[folder]", "Project folder", ".")
     .action((folder: string) => {
-      console.log(`Clean command not yet implemented for folder: ${folder}`);
-      process.exit(1);
+      const bsFolder = path.join(folder, "./lib/bs");
+      fs.rmSync(bsFolder, { force: true, recursive: true });
+
+      const ocamlFolder = path.join(folder, "./lib/ocaml");
+      fs.rmSync(ocamlFolder, { force: true, recursive: true });
     });
 
   program.parse();

@@ -33,7 +33,7 @@ export interface ParseResult {
 /**
  * Get parser arguments for bsc -bs-ast
  */
-function getParserArgs(
+export function getParserArgs(
   buildState: BuildState,
   pkg: Package,
   filename: string,
@@ -164,6 +164,8 @@ function generateAst(
     contents,
     warnErrorOverride,
   );
+
+  console.log(args.join(" "));
 
   // Create directory for AST file
   const astDir = path.join(buildPath, path.dirname(astPath));

@@ -56,7 +56,9 @@ export function getRuntimePath(): string | undefined {
   } else {
     try {
       const require = createRequire(path.join(process.cwd(), "./package.json"));
-      const runtime = require.resolve("@rescript/runtime/package.json");
+      const runtime = path.dirname(
+        require.resolve("@rescript/runtime/package.json"),
+      );
       return fs.realpathSync(runtime);
     } catch (cause) {
       throw new Error(

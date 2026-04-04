@@ -20,6 +20,7 @@ import {
   getPackageSpecs,
   getSuffix,
   getWarningArgs,
+  getJsxArgs,
 } from "../types/config.ts";
 import { createPathSync, getLastModifiedSync } from "../utils/helpers.ts";
 import { append as logAppend } from "./logs.ts";
@@ -34,7 +35,7 @@ export interface CompileResult {
 /**
  * Get compiler arguments for a module
  */
-function getCompilerArgs(
+export function getCompilerArgs(
   buildState: BuildState,
   pkg: Package,
   module: Module,
@@ -83,31 +84,32 @@ function getCompilerArgs(
   const includeArgs = includePaths.flatMap((p) => ["-I", p]);
 
   // Get suffix for output
-  const _suffix = getSuffix(rootConfig, specs[0] || { module: "esmodule" });
-  const implBasename = getBasename(sourceFile.implementation.path);
+  const suffix = getSuffix(rootConfig, specs[0] || { module: "esmodule" });
   const namespace = pkg.namespace;
-  const _assetName = getAssetName(implBasename, namespace);
+  // const _assetName = getAssetName(implBasename, namespace);
 
   const { runtimePath } = buildState.compilerInfo;
 
   // Build args
   const args: string[] = [
-    ...(runtimePath ? ["-runtime", runtimePath] : []),
     ...includeArgs,
+    ...(runtimePath ? ["-runtime-path", runtimePath] : []),
     ...warningArgs,
     ...bscFlags,
-    "-color",
-    "always",
+    ...getJsxArgs(rootConfig),
+    "-bs-package-name",
+    rootConfig.name,
+    "-bs-package-output",
+    `esmodule:src:${suffix}`,
+    // "-color",
+    // "always",
+    // ...(sourceFile.interface !== undefined
+    //   ? [sourceFile.interface.path.replace(/\.resi$/, ".iast")]
+    //   : []),
+    sourceFile.implementation.path.replace(/\.res$/, ".ast"),
   ];
 
-  // Add interface file if present
-  if (sourceFile.interface !== undefined) {
-    const ifaceBasename = getBasename(sourceFile.interface.path);
-    args.push(`${ifaceBasename}.iast`);
-  }
-
-  // Add implementation file
-  args.push(`${implBasename}.ast`);
+  console.log(args.join(" "));
 
   return args;
 }
