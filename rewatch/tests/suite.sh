@@ -53,4 +53,4 @@ else
   exit 1
 fi
 
-./compile.sh && ./watch.sh && ./lock.sh && ./suffix.sh && ./format.sh && ./clean.sh && ./experimental.sh && ./experimental-invalid.sh && ./compiler-args.sh
+bash ./dev-module-shadowing.sh && ./compile.sh && ./watch.sh && ./lock.sh && ./suffix.sh && ./format.sh && ./clean.sh && ./experimental.sh && ./experimental-invalid.sh && ./compiler-args.sh
